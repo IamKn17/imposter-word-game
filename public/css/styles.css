@@ -1,0 +1,267 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;700;900&display=swap');
+
+:root {
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #06080e;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.1) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(6, 182, 212, 0.05) 0px, transparent 50%);
+  color: #f1f5f9;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Custom Cyberpunk Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Background canvas layer */
+#bg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.7;
+}
+
+/* Glassmorphism Card Style */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 35px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.glass-panel-glow-purple {
+  box-shadow: 0 10px 30px -5px rgba(139, 92, 246, 0.15), 0 0 20px -3px rgba(139, 92, 246, 0.1);
+}
+
+/* ============================================================
+   HOLD TO REVEAL BIOMETRIC SCANNER COMPONENT
+   ============================================================ */
+#role-card {
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: #090d16;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+#role-card.revealed {
+  transform: scale(1.02);
+}
+
+/* Fingerprint laser scanning beam animation */
+.scan-laser {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #38bdf8, #818cf8, transparent);
+  box-shadow: 0 0 15px #38bdf8, 0 0 25px #818cf8;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#role-card.revealed .scan-laser {
+  opacity: 1;
+  animation: scanLaser 1.5s infinite linear;
+}
+
+@keyframes scanLaser {
+  0% { top: 0%; }
+  50% { top: 96%; }
+  100% { top: 0%; }
+}
+
+/* Radar pulse circle animation */
+.radar-ring {
+  animation: radarWave 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+@keyframes radarWave {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Role reveal blur transition */
+.role-card-hidden {
+  filter: blur(28px);
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+#role-card.revealed .role-card-hidden {
+  filter: blur(0);
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+#role-card.revealed #role-card-cover {
+  opacity: 0;
+  transform: scale(0.92);
+  pointer-events: none;
+}
+
+#role-card-cover {
+  transition: all 0.25s ease-in-out;
+}
+
+/* Dynamic card theming */
+#role-card.theme-civilian {
+  border-color: #38bdf8;
+  box-shadow: 0 0 40px -5px rgba(56, 189, 248, 0.35), inset 0 0 30px rgba(56, 189, 248, 0.15);
+}
+
+#role-card.theme-civilian #role-card-content {
+  background: radial-gradient(circle at top, rgba(14, 165, 233, 0.25), transparent 70%), #090d16;
+}
+
+#role-card.theme-imposter {
+  border-color: #f43f5e;
+  box-shadow: 0 0 40px -5px rgba(244, 63, 94, 0.4), inset 0 0 30px rgba(244, 63, 94, 0.2);
+}
+
+#role-card.theme-imposter #role-card-content {
+  background: radial-gradient(circle at top, rgba(225, 29, 72, 0.3), transparent 70%), #090d16;
+}
+
+/* ============================================================
+   TACTICAL CLUE & TURN PULSES
+   ============================================================ */
+@keyframes turnGlowPulse {
+  0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4), 0 0 15px rgba(168, 85, 247, 0.3); }
+  50% { box-shadow: 0 0 0 12px rgba(168, 85, 247, 0), 0 0 30px rgba(168, 85, 247, 0.6); }
+  100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0), 0 0 15px rgba(168, 85, 247, 0.3); }
+}
+
+.active-turn-pulse {
+  animation: turnGlowPulse 2s infinite;
+  border-color: #c084fc !important;
+}
+
+/* Urgent Red Pulse when time < 5s */
+@keyframes urgentWarningPulse {
+  0%, 100% { background-color: rgba(225, 29, 72, 0.1); }
+  50% { background-color: rgba(225, 29, 72, 0.3); }
+}
+.urgent-pulse {
+  animation: urgentWarningPulse 0.8s infinite;
+}
+
+/* Screen Shake Animation on Ejection */
+@keyframes screenShakeAnim {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  15% { transform: translate(-4px, 3px) rotate(-0.5deg); }
+  30% { transform: translate(4px, -3px) rotate(0.5deg); }
+  45% { transform: translate(-3px, -2px) rotate(-0.3deg); }
+  60% { transform: translate(3px, 2px) rotate(0.3deg); }
+  75% { transform: translate(-1px, 1px) rotate(0deg); }
+}
+
+.screen-shake {
+  animation: screenShakeAnim 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Slide in animation */
+@keyframes slideInUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.slide-in {
+  animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* View transitions */
+.view-container {
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+}
+
+/* Toast animations */
+@keyframes toastSlideIn {
+  from { transform: translateY(-120%) scale(0.9); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.toast-enter {
+  animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes toastSlideOut {
+  from { transform: translateY(0) scale(1); opacity: 1; }
+  to { transform: translateY(-30px) scale(0.9); opacity: 0; }
+}
+
+.toast-exit {
+  animation: toastSlideOut 0.25s ease-in forwards;
+}
+
+/* Button Shimmer Effect */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent 30%
+  );
+  transform: rotate(30deg);
+  animation: shimmerMove 3.5s infinite;
+}
+
+@keyframes shimmerMove {
+  0% { transform: translate(-100%, -100%) rotate(30deg); }
+  25%, 100% { transform: translate(100%, 100%) rotate(30deg); }
+}
+
+/* Cyber text gradient */
+.text-cyber-gradient {
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

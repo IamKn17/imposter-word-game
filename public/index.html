@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IMPOSTER // Tactical Social Deduction</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { 
+      darkMode: 'class', 
+      theme: { 
+        extend: { 
+          colors: {
+            slate: {
+              850: '#111726',
+              900: '#0b0f19',
+              950: '#06080e',
+            }
+          } 
+        } 
+      } 
+    }
+  </script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen relative selection:bg-purple-500 selection:text-white">
+  <!-- Dynamic Ambient Particle Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Top Toast Notification Stack -->
+  <div id="toast-container" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2.5 w-full max-w-sm px-4 pointer-events-none"></div>
+
+  <!-- Reconnecting Fullscreen Overlay -->
+  <div id="reconnect-overlay" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex flex-col items-center justify-center">
+    <div class="relative w-20 h-20 mb-6">
+      <div class="absolute inset-0 rounded-full border-4 border-purple-500/20 animate-ping"></div>
+      <div class="w-20 h-20 rounded-full border-4 border-t-purple-500 border-r-pink-500 border-b-cyan-400 border-l-transparent animate-spin"></div>
+    </div>
+    <h2 class="text-2xl font-black font-display tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">SIGNAL LOST</h2>
+    <p class="text-slate-400 text-sm mt-2 font-mono tracking-wider">RE-ESTABLISHING SECURE PROTOCOL...</p>
+  </div>
+
+  <!-- Top Navigation / Ambient HUD -->
+  <header class="relative z-10 max-w-md mx-auto px-4 pt-4 pb-2 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-lg shadow-emerald-400/50"></div>
+      <span class="text-xs font-mono font-bold tracking-widest text-slate-400 uppercase">SYS.NET // ACTIVE</span>
+    </div>
+    
+    <!-- Audio FX Toggle -->
+    <button id="btn-audio-toggle" class="glass-panel px-3 py-1.5 rounded-full text-xs font-mono font-bold text-slate-300 hover:text-white hover:border-purple-500/50 transition flex items-center gap-1.5 active:scale-95" title="Toggle Sound FX">
+      <span id="audio-icon">🔊</span>
+      <span id="audio-label" class="tracking-wider">SFX ON</span>
+    </button>
+  </header>
+
+  <main class="max-w-md mx-auto h-full min-h-[calc(100vh-60px)] flex flex-col relative px-4 pb-8 z-10">
+    
+    <!-- ========================================== -->
+    <!-- 1. WELCOME / HOME VIEW -->
+    <!-- ========================================== -->
+    <div id="view-home" class="view-container flex flex-col items-center justify-center flex-1 py-8">
+      
+      <!-- Brand Logo Header -->
+      <div class="text-center mb-8 relative">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/60 border border-purple-500/30 text-purple-300 text-xs font-mono font-bold tracking-widest uppercase mb-3 shadow-lg shadow-purple-950/50">
+          <span>🕵️‍♂️</span> <span>DECEPTION PROTOCOL</span>
+        </div>
+        <h1 class="text-5xl font-black font-display tracking-tight text-cyber-gradient filter drop-shadow-lg">
+          IMPOSTER
+        </h1>
+        <p class="text-slate-400 text-sm mt-1.5 font-medium tracking-wide">Blend in. Deduce clues. Unmask the liar.</p>
+      </div>
+
+      <!-- Main Home Card Console -->
+      <div class="w-full glass-panel glass-panel-glow-purple p-6 rounded-3xl border border-slate-700/50 relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400"></div>
+
+        <!-- Player Name Input with Live Avatar Preview -->
+        <div class="mb-5">
+          <label class="block text-xs font-mono font-bold uppercase tracking-widest text-slate-400 mb-2 flex justify-between items-center" for="player-name">
+            <span>Operative Alias</span>
+            <span class="text-[10px] text-purple-400">MAX 15 CHARS</span>
+          </label>
+          <div class="flex items-center gap-3">
+            <div id="avatar-preview" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center font-black text-xl text-white shadow-md border border-white/20 flex-shrink-0">
+              ?
+            </div>
+            <input type="text" id="player-name" class="w-full bg-slate-900/80 border-2 border-slate-700 focus:border-purple-500 rounded-2xl px-4 py-3.5 focus:outline-none transition text-white font-bold tracking-wide placeholder-slate-500 text-base" placeholder="Enter your codename..." maxlength="15" autocomplete="off">
+          </div>
+        </div>
+
+        <!-- Mode Switcher Tabs -->
+        <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-950/80 rounded-2xl border border-slate-800 mb-5">
+          <button id="tab-create" class="py-2.5 px-3 rounded-xl font-display font-bold text-sm transition-all duration-200 bg-purple-600 text-white shadow-lg shadow-purple-900/40">
+            Create Room
+          </button>
+          <button id="tab-join" class="py-2.5 px-3 rounded-xl font-display font-bold text-sm transition-all duration-200 text-slate-400 hover:text-white">
+            Join Room
+          </button>
+        </div>
+
+        <!-- Create Room Sub-section -->
+        <div id="section-create" class="space-y-4">
+          <button id="btn-create" class="w-full btn-shimmer bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 hover:from-purple-500 hover:to-pink-500 text-white font-display font-black py-4 px-6 rounded-2xl shadow-xl shadow-purple-950/60 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 text-base tracking-wider uppercase">
+            <span>🚀</span> <span>Establish New Mission</span>
+          </button>
+        </div>
+
+        <!-- Join Room Sub-section -->
+        <div id="section-join" class="hidden space-y-4">
+          <div>
+            <label class="block text-xs font-mono font-bold uppercase tracking-widest text-slate-400 mb-2" for="room-code">
+              Access Code
+            </label>
+            <input type="text" id="room-code" class="w-full bg-slate-900/80 border-2 border-slate-700 focus:border-pink-500 rounded-2xl px-4 py-3.5 focus:outline-none transition text-pink-400 uppercase font-mono font-black tracking-[0.3em] text-center text-2xl placeholder-slate-600" placeholder="••••••" maxlength="6" autocomplete="off">
+          </div>
+          <button id="btn-join" class="w-full btn-shimmer bg-gradient-to-r from-pink-600 via-purple-600 to-pink-700 hover:from-pink-500 hover:to-purple-500 text-white font-display font-black py-4 px-6 rounded-2xl shadow-xl shadow-pink-950/60 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 text-base tracking-wider uppercase">
+            <span>🔗</span> <span>Infiltrate Room</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Quick Feature Badges -->
+      <div class="grid grid-cols-3 gap-2 mt-8 w-full text-center">
+        <div class="glass-panel p-3 rounded-2xl border border-slate-800/80">
+          <div class="text-lg mb-1">🎭</div>
+          <div class="text-[11px] font-bold text-slate-300">Secret Roles</div>
+        </div>
+        <div class="glass-panel p-3 rounded-2xl border border-slate-800/80">
+          <div class="text-lg mb-1">⏱️</div>
+          <div class="text-[11px] font-bold text-slate-300">1-Word Clues</div>
+        </div>
+        <div class="glass-panel p-3 rounded-2xl border border-slate-800/80">
+          <div class="text-lg mb-1">⚡</div>
+          <div class="text-[11px] font-bold text-slate-300">3-12 Players</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. LOBBY VIEW -->
+    <!-- ========================================== -->
+    <div id="view-lobby" class="view-container hidden flex-col flex-1 py-4">
+      
+      <!-- Room Code Card with 1-Click Copy -->
+      <div class="glass-panel p-5 rounded-3xl border border-purple-500/20 text-center mb-5 relative overflow-hidden group">
+        <div class="absolute -right-8 -top-8 w-24 h-24 bg-purple-500/10 rounded-full blur-xl pointer-events-none"></div>
+        <p class="text-xs font-mono font-bold uppercase tracking-widest text-slate-400 mb-1.5 flex items-center justify-center gap-1.5">
+          <span>📡</span> <span>MISSION ACCESS CODE</span>
+        </p>
+        
+        <div id="btn-copy-code" class="inline-flex items-center justify-center gap-3 bg-slate-950/70 border border-slate-700 hover:border-purple-400 px-6 py-3 rounded-2xl cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 shadow-inner" title="Click to copy room code">
+          <span id="lobby-room-code" class="text-4xl font-black font-mono tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">XXXXXX</span>
+          <div class="p-2 rounded-xl bg-purple-600/20 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-400 mt-2 font-mono">Tap code to copy shareable invite</p>
+      </div>
+
+      <!-- Operatives List -->
+      <div class="flex-1 glass-panel rounded-3xl p-5 mb-5 flex flex-col">
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-base font-display font-black tracking-wider text-slate-200 uppercase">Agents Assembled</span>
+            <span id="player-count-badge" class="px-2.5 py-0.5 rounded-full bg-purple-950/80 border border-purple-500/40 text-purple-300 font-mono font-bold text-xs">
+              <span id="player-count">0</span>/12
+            </span>
+          </div>
+          <span class="text-[11px] font-mono text-slate-400">Min 3 to launch</span>
+        </div>
+
+        <div id="player-list" class="grid grid-cols-2 gap-2.5 overflow-y-auto max-h-56 flex-1 pr-1 auto-rows-max">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+      <!-- Host Settings Panel -->
+      <div id="host-controls" class="hidden glass-panel rounded-3xl p-5 mb-5 border border-purple-500/20">
+        <h3 class="font-display font-black text-purple-400 mb-3 text-xs uppercase tracking-widest flex items-center gap-2">
+          <span>⚙️</span> <span>Mission Parameters (Host Controls)</span>
+        </h3>
+        <div class="grid grid-cols-3 gap-2.5 text-xs">
+          <div class="bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800">
+            <span class="block text-slate-400 font-mono text-[10px] uppercase tracking-wider mb-1">Imposters</span>
+            <select id="setting-imposters" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-2 py-1.5 text-white font-bold focus:outline-none focus:ring-1 focus:ring-purple-500">
+              <option value="auto">Auto</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+          </div>
+          <div class="bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800">
+            <span class="block text-slate-400 font-mono text-[10px] uppercase tracking-wider mb-1">Clue Time</span>
+            <select id="setting-clueTime" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-2 py-1.5 text-white font-bold focus:outline-none focus:ring-1 focus:ring-purple-500">
+              <option value="30">30s</option>
+              <option value="45" selected>45s</option>
+              <option value="60">60s</option>
+              <option value="90">90s</option>
+            </select>
+          </div>
+          <div class="bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800">
+            <span class="block text-slate-400 font-mono text-[10px] uppercase tracking-wider mb-1">Discussion</span>
+            <select id="setting-discussionTime" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-2 py-1.5 text-white font-bold focus:outline-none focus:ring-1 focus:ring-purple-500">
+              <option value="60">60s</option>
+              <option value="90">90s</option>
+              <option value="120" selected>120s</option>
+              <option value="180">180s</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="space-y-3 mt-auto">
+        <button id="btn-start" class="w-full btn-shimmer bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white font-display font-black py-4 px-6 rounded-2xl shadow-xl shadow-emerald-950/60 transition-all transform hover:scale-[1.02] active:scale-95 disabled:opacity-40 disabled:pointer-events-none hidden text-base tracking-wider uppercase">
+          <span>⚡</span> <span>INITIALIZE MISSION</span>
+        </button>
+        <button id="btn-leave" class="w-full bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white font-bold py-3 px-4 rounded-2xl border border-slate-800 transition text-xs tracking-wider uppercase">
+          Leave Room
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 3. ROLE REVEAL VIEW (BIOMETRIC SCANNER) -->
+    <!-- ========================================== -->
+    <div id="view-role" class="view-container hidden flex-col items-center justify-center flex-1 py-4">
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-400 font-mono text-[11px] font-bold uppercase tracking-widest mb-2">
+          <span>🔒</span> <span>EYES ONLY // CLASSIFIED</span>
+        </div>
+        <h2 class="text-2xl font-black font-display tracking-tight text-white">Identity Verification</h2>
+      </div>
+      
+      <!-- Biometric Role Card with Laser Scan Line -->
+      <div id="role-card" class="relative w-full max-w-xs aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl cursor-pointer">
+        <div class="scan-laser"></div>
+
+        <!-- Default Cover: Holographic Biometric Scanner -->
+        <div class="absolute inset-0 flex flex-col items-center justify-center p-6 bg-slate-900 z-10" id="role-card-cover">
+          <!-- Concentric Radar Rings -->
+          <div class="relative w-28 h-28 flex items-center justify-center mb-6">
+            <div class="absolute inset-0 rounded-full border border-cyan-500/30 radar-ring"></div>
+            <div class="absolute inset-3 rounded-full border border-purple-500/40 radar-ring" style="animation-delay: 0.6s;"></div>
+            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-cyan-500/20 to-purple-500/20 border-2 border-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+              <svg class="w-10 h-10 text-cyan-300 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 004 11v.015"></path>
+              </svg>
+            </div>
+          </div>
+
+          <p class="text-lg font-black font-display text-slate-100 uppercase tracking-widest text-center">HOLD TO REVEAL</p>
+          <p class="text-xs font-mono text-cyan-400 mt-1 tracking-wider">PRESS & HOLD FINGER / MOUSE</p>
+          <p class="text-[11px] text-slate-500 mt-4 text-center">Do not let others see your screen</p>
+        </div>
+        
+        <!-- Revealed State (Classified Dossier) -->
+        <div class="absolute inset-0 flex flex-col items-center justify-center p-6 role-card-hidden" id="role-card-content">
+          <div id="role-badge-tag" class="px-3 py-1 rounded-full text-xs font-mono font-black uppercase tracking-widest mb-3 border">
+            OPERATIVE ROLE
+          </div>
+
+          <div id="role-title" class="text-4xl font-black font-display mb-1 uppercase tracking-wider text-center">
+            ROLE
+          </div>
+          
+          <div class="w-full h-px bg-white/15 my-4"></div>
+          
+          <div class="w-full text-center mb-3">
+            <span class="text-[11px] font-mono uppercase tracking-widest text-slate-400 font-bold block mb-1">Target Category</span>
+            <div id="role-category" class="text-base font-black text-white bg-black/40 border border-white/10 px-4 py-2 rounded-xl inline-block">
+              Category
+            </div>
+          </div>
+          
+          <div class="w-full text-center">
+            <span class="text-[11px] font-mono uppercase tracking-widest text-slate-400 font-bold block mb-1" id="word-label">Secret Word</span>
+            <div id="role-word" class="text-2xl font-black font-display text-center bg-black/60 border border-white/15 px-4 py-3.5 rounded-2xl w-full break-words shadow-inner">
+              WORD
+            </div>
+          </div>
+          
+          <p id="role-warning" class="text-center mt-4 font-bold text-xs px-3.5 py-2 rounded-xl w-full"></p>
+        </div>
+      </div>
+
+      <div class="mt-8 text-center">
+        <div class="inline-flex items-center gap-2 text-xs text-slate-400 font-mono animate-pulse">
+          <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+          <span>Deploying round in 8 seconds...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 4. CLUE ROUND VIEW -->
+    <!-- ========================================== -->
+    <div id="view-clue" class="view-container hidden flex-col flex-1 py-3">
+      
+      <!-- Top Tactical HUD -->
+      <div class="flex justify-between items-center mb-4 glass-panel p-3.5 px-4 rounded-2xl">
+        <div>
+          <h2 id="round-indicator" class="text-base font-black font-display text-white tracking-wide">Round 1 of 3</h2>
+          <div id="my-role-badge" class="inline-block px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-full uppercase tracking-wider mt-0.5 border">
+            Role
+          </div>
+        </div>
+        
+        <!-- Glowing Radial SVG Timer -->
+        <div class="relative w-14 h-14 flex items-center justify-center">
+          <svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#1e293b" stroke-width="8"></circle>
+            <circle id="timer-ring-clue" cx="50" cy="50" r="42" fill="none" stroke="#10b981" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="0" class="transition-all duration-1000 ease-linear shadow-lg"></circle>
+          </svg>
+          <span id="timer-text-clue" class="text-base font-black font-mono text-white">45</span>
+        </div>
+      </div>
+
+      <!-- Turn Focus Card Console -->
+      <div class="glass-panel rounded-3xl p-5 mb-4 text-center relative overflow-hidden transition-all" id="turn-container">
+        <p class="text-[11px] font-mono font-bold uppercase tracking-widest text-slate-400 mb-1" id="turn-status">CURRENT TURN</p>
+        <h3 class="text-2xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-cyan-300 mb-4" id="active-player-name">Player</h3>
+        
+        <!-- Input Console for My Turn -->
+        <div id="my-turn-input" class="hidden">
+          <div class="relative mb-3">
+            <input type="text" id="input-clue" class="w-full bg-slate-950/90 border-2 border-purple-500/60 focus:border-purple-400 rounded-2xl px-4 py-3.5 text-center text-xl font-display font-black tracking-wider transition text-white outline-none placeholder-slate-600 shadow-inner" placeholder="TYPE 1-WORD CLUE..." autocomplete="off">
+            <div id="clue-error" class="text-rose-400 text-xs font-bold font-mono mt-1.5 min-h-[18px]"></div>
+          </div>
+          <button id="btn-submit-clue" class="w-full btn-shimmer bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-display font-black py-3.5 px-4 rounded-2xl transition shadow-lg shadow-purple-950/50 disabled:opacity-40 disabled:pointer-events-none uppercase tracking-wider text-sm">
+            Transmit Clue 🚀
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Clue Transmissions Log -->
+      <div class="flex-1 flex flex-col min-h-[220px]">
+        <div class="flex justify-between items-center mb-2 px-1">
+          <h3 class="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+            <span>📡</span> <span>Transmission Feed</span>
+          </h3>
+          <span class="text-[10px] font-mono text-purple-400">NO REPEATS</span>
+        </div>
+        <div id="clues-list" class="flex-1 overflow-y-auto space-y-2 pb-2 pr-1 max-h-60">
+          <!-- Clues chips injected here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 5. DISCUSSION & VOTING VIEW -->
+    <!-- ========================================== -->
+    <div id="view-vote" class="view-container hidden flex-col flex-1 py-3">
+      
+      <!-- Siren Phase Header -->
+      <div class="glass-panel p-4 rounded-2xl text-center mb-4 border border-amber-500/30">
+        <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-950/80 border border-amber-500/40 text-amber-300 font-mono text-[10px] font-bold uppercase tracking-widest mb-1.5">
+          <span>🚨</span> <span>INVESTIGATION PROTOCOL</span>
+        </div>
+        <h2 id="vote-phase-title" class="text-2xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 uppercase tracking-wide">Emergency Council</h2>
+        
+        <div class="flex items-center justify-center gap-2 mt-1.5">
+          <span class="text-xs font-mono text-slate-400 uppercase tracking-wider">Time Remaining:</span>
+          <span id="timer-text-vote" class="text-lg font-black font-mono text-amber-300">2:00</span>
+        </div>
+      </div>
+
+      <!-- All Clues Summary Dossier -->
+      <div id="discussion-summary" class="glass-panel rounded-2xl p-4 mb-4">
+        <h3 class="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+          <span>📋</span> <span>Transmitted Clues Summary</span>
+        </h3>
+        <div id="all-clues-summary" class="grid grid-cols-2 gap-2 text-xs max-h-36 overflow-y-auto pr-1">
+          <!-- Clues summary injected here -->
+        </div>
+      </div>
+
+      <!-- Voting Suspect Lineup -->
+      <div class="flex-1 flex flex-col">
+        <div class="flex justify-between items-center mb-2 px-1">
+          <h3 class="text-xs font-display font-black text-slate-200 uppercase tracking-wider">Cast Vote To Eject</h3>
+          <span id="vote-progress" class="text-xs font-mono font-bold text-purple-400 bg-purple-950/70 border border-purple-500/30 px-2 py-0.5 rounded-full">0/0 Voted</span>
+        </div>
+        
+        <div id="voting-grid" class="grid grid-cols-2 gap-2.5 mb-4">
+          <!-- Suspect cards injected here -->
+        </div>
+
+        <button id="btn-skip-vote" class="mt-auto w-full bg-slate-900/80 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white font-display font-bold py-3 px-4 rounded-2xl transition text-xs uppercase tracking-wider">
+          Skip Vote
+        </button>
+        <div id="vote-confirmation" class="hidden mt-auto w-full glass-panel border-purple-500/30 text-center py-3.5 rounded-2xl font-display font-bold text-sm text-purple-300">
+          Waiting for all operatives to vote...
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 6. EJECTION & COUNTER-GUESS VIEW -->
+    <!-- ========================================== -->
+    <div id="view-ejection" class="view-container hidden flex-col items-center justify-center flex-1 py-4 text-center">
+      <div id="ejection-content" class="w-full">
+        <!-- Dramatic reveal content injected here -->
+      </div>
+      
+      <!-- Counter Guess Emergency Protocol -->
+      <div id="counter-guess-section" class="hidden w-full mt-6 glass-panel border-rose-500/40 p-6 rounded-3xl shadow-2xl">
+        <div id="counter-guess-active" class="hidden">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-950/80 border border-rose-500/40 text-rose-300 font-mono text-[10px] font-bold uppercase tracking-widest mb-2">
+            <span>⚡</span> <span>IMPOSTER REDEMPTION</span>
+          </div>
+          <h3 class="text-2xl font-black font-display text-rose-400 mb-1 uppercase tracking-wider">Final Guess Protocol</h3>
+          <p class="text-xs text-slate-300 mb-4">You were caught! But if you deduce the exact Secret Word now, the Imposters win!</p>
+          
+          <div class="relative w-14 h-14 mx-auto mb-4 flex items-center justify-center">
+            <svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#1e293b" stroke-width="8"></circle>
+              <circle id="timer-ring-guess" cx="50" cy="50" r="42" fill="none" stroke="#f43f5e" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="0" class="transition-all duration-1000 ease-linear"></circle>
+            </svg>
+            <span id="timer-text-guess" class="text-base font-black font-mono text-white">30</span>
+          </div>
+
+          <input type="text" id="input-guess" class="w-full bg-slate-950 border-2 border-rose-500/60 focus:border-rose-400 rounded-2xl px-4 py-3.5 text-center text-lg font-display font-black tracking-wider transition text-white outline-none mb-3" placeholder="TYPE SECRET WORD..." autocomplete="off">
+          <button id="btn-submit-guess" class="w-full btn-shimmer bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-display font-black py-3.5 px-4 rounded-2xl transition shadow-xl uppercase tracking-wider text-sm">
+            Execute Counter-Guess 💥
+          </button>
+        </div>
+        
+        <div id="counter-guess-waiting" class="hidden text-center py-4">
+          <div class="w-12 h-12 rounded-full border-4 border-rose-500/20 border-t-rose-500 animate-spin mx-auto mb-3"></div>
+          <p class="font-display font-black text-rose-400 text-base uppercase tracking-wider" id="counter-guess-waiting-text">Imposter is calculating...</p>
+        </div>
+      </div>
+
+      <button id="btn-ejection-continue" class="hidden mt-8 bg-slate-800 hover:bg-slate-700 text-white font-display font-bold py-3 px-8 rounded-2xl transition text-xs tracking-wider uppercase">
+        Continue Mission ➡️
+      </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 7. GAME OVER VIEW (VICTORY SCREEN) -->
+    <!-- ========================================== -->
+    <div id="view-gameover" class="view-container hidden flex-col flex-1 py-4">
+      <div class="text-center mb-6 relative">
+        <div id="winner-banner" class="inline-block px-4 py-1.5 rounded-full font-mono font-black text-xs uppercase tracking-widest mb-3 shadow-lg"></div>
+        <h2 id="winner-title" class="text-4xl font-black font-display tracking-tight uppercase text-transparent bg-clip-text">TEAM WINS</h2>
+        <p id="win-reason" class="text-slate-300 font-medium text-xs mt-1"></p>
+      </div>
+
+      <!-- Secret Word Reveal Card -->
+      <div class="glass-panel p-5 rounded-3xl mb-5 text-center border border-purple-500/30 relative overflow-hidden">
+        <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">Target Secret Word</p>
+        <div id="game-over-word" class="text-3xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-cyan-300 mb-1">WORD</div>
+        <div id="game-over-category" class="text-xs font-mono font-bold text-purple-400">Category</div>
+      </div>
+
+      <!-- Scoreboard Leaderboard -->
+      <div class="flex-1 glass-panel rounded-3xl p-5 mb-5 flex flex-col">
+        <h3 class="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest mb-3 text-center flex items-center justify-center gap-1.5">
+          <span>🏆</span> <span>Mission Scoreboard</span>
+        </h3>
+        <div id="scoreboard-list" class="space-y-2 overflow-y-auto max-h-56 pr-1">
+          <!-- Scores injected here -->
+        </div>
+      </div>
+
+      <!-- Play Again & Return Controls -->
+      <div class="space-y-2.5 mt-auto">
+        <button id="btn-play-again" class="w-full btn-shimmer bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 hover:from-purple-500 hover:to-pink-500 text-white font-display font-black py-4 px-6 rounded-2xl shadow-xl shadow-purple-950/60 transition-all transform hover:scale-[1.02] active:scale-95 text-sm tracking-wider uppercase">
+          🔄 Play Again
+        </button>
+        <button id="btn-leave-game" class="w-full bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white font-bold py-3 px-4 rounded-2xl border border-slate-800 transition text-xs tracking-wider uppercase">
+          Return to Base
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/socket.js"></script>
+  <script src="/js/game.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

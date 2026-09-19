@@ -1,0 +1,114 @@
+{
+  "categories": [
+    {
+      "name": "Food",
+      "emoji": "🍔",
+      "words": [
+        "pizza", "sushi", "croissant", "taco", "ramen",
+        "lasagna", "waffle", "dumpling", "burrito", "pretzel",
+        "pancake", "bagel", "muffin", "brownie", "nachos",
+        "risotto", "falafel", "goulash", "tiramisu", "churro",
+        "fondue", "guacamole", "paella", "cheesecake", "tempura"
+      ]
+    },
+    {
+      "name": "Geography",
+      "emoji": "🌍",
+      "words": [
+        "volcano", "glacier", "canyon", "peninsula", "archipelago",
+        "plateau", "tundra", "delta", "fjord", "savanna",
+        "lagoon", "prairie", "marshland", "waterfall", "oasis",
+        "geyser", "cavern", "dunes", "reef", "basin",
+        "isthmus", "summit", "ravine", "estuary", "crater"
+      ]
+    },
+    {
+      "name": "Objects",
+      "emoji": "📦",
+      "words": [
+        "umbrella", "telescope", "chandelier", "compass", "hourglass",
+        "lantern", "monocle", "padlock", "trampoline", "hammock",
+        "binoculars", "thermos", "mannequin", "pendulum", "cauldron",
+        "kaleidoscope", "periscope", "sundial", "metronome", "bellows",
+        "sextant", "typewriter", "gramophone", "locket", "anvil"
+      ]
+    },
+    {
+      "name": "Pop Culture",
+      "emoji": "🎬",
+      "words": [
+        "superhero", "meme", "podcast", "anime", "streaming",
+        "cosplay", "fandom", "remix", "hashtag", "influencer",
+        "sequel", "franchise", "dubbing", "crossover", "parody",
+        "karaoke", "sitcom", "avatar", "blockbuster", "spinoff",
+        "reboot", "cameo", "premiere", "tabloid", "binge"
+      ]
+    },
+    {
+      "name": "Technology",
+      "emoji": "💻",
+      "words": [
+        "algorithm", "blockchain", "satellite", "hologram", "drone",
+        "firewall", "bandwidth", "pixel", "malware", "encryption",
+        "bluetooth", "compiler", "motherboard", "router", "firmware",
+        "transistor", "ethernet", "gigabyte", "database", "debugger",
+        "prototype", "microchip", "touchscreen", "autopilot", "biometric"
+      ]
+    },
+    {
+      "name": "Animals",
+      "emoji": "🐾",
+      "words": [
+        "chameleon", "platypus", "flamingo", "octopus", "pangolin",
+        "narwhal", "porcupine", "armadillo", "jellyfish", "cheetah",
+        "iguana", "pelican", "scorpion", "walrus", "toucan",
+        "lobster", "hamster", "gazelle", "starfish", "wolverine",
+        "mongoose", "falcon", "badger", "seahorse", "mantis"
+      ]
+    },
+    {
+      "name": "Sports",
+      "emoji": "⚽",
+      "words": [
+        "cricket", "badminton", "archery", "surfing", "fencing",
+        "volleyball", "gymnastics", "boxing", "wrestling", "skiing",
+        "marathon", "javelin", "kayaking", "lacrosse", "squash",
+        "triathlon", "bobsled", "curling", "snooker", "parkour",
+        "skateboarding", "snowboarding", "sailing", "rowing", "polo"
+      ]
+    },
+    {
+      "name": "Music",
+      "emoji": "🎵",
+      "words": [
+        "symphony", "acoustic", "saxophone", "drumstick", "orchestra",
+        "karaoke", "harmony", "ukulele", "turntable", "xylophone",
+        "accordion", "bassline", "falsetto", "mandolin", "triangle",
+        "maracas", "crescendo", "timpani", "banjo", "theremin",
+        "oboe", "cello", "harp", "trombone", "clarinet"
+      ]
+    },
+    {
+      "name": "Science",
+      "emoji": "🔬",
+      "words": [
+        "photosynthesis", "chromosome", "microscope", "catalyst", "neutron",
+        "molecule", "asteroid", "prism", "ecosystem", "voltage",
+        "bacteria", "fossil", "nucleus", "plasma", "enzyme",
+        "gravity", "friction", "isotope", "spectrum", "genome",
+        "neuron", "amoeba", "quasar", "crystal", "magnet"
+      ]
+    },
+    {
+      "name": "Professions",
+      "emoji": "👷",
+      "words": [
+        "astronaut", "detective", "pharmacist", "carpenter", "surgeon",
+        "archaeologist", "veterinarian", "librarian", "electrician", "diplomat",
+        "plumber", "firefighter", "paramedic", "bartender", "locksmith",
+        "jeweler", "florist", "butcher", "tailor", "barista",
+        "pilot", "dentist", "blacksmith", "lifeguard", "mechanic"
+      ]
+    }
+  ]
+}
